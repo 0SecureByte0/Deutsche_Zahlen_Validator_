@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German Number Validator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f172a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #1e293b;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            border: 1px solid #334155;
+        }
+
+        h1 {
+            color: #e2e8f0;
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 32px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            font-size: 15px;
+            background: #0f172a;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]::placeholder {
+            color: #64748b;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+            background: #1e293b;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-validate {
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            color: #0f172a;
+        }
+
+        .btn-validate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-validate:active {
+            transform: translateY(0);
+        }
+
+        .btn-clear {
+            background: #334155;
+            color: #cbd5e1;
+        }
+
+        .btn-clear:hover {
+            background: #475569;
+            color: #df6214;
+        }
+
+        .result {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 28px;
+            min-height: 70px;
+            display: none;
+            border: 1px solid #334155;
+        }
+
+        .result.show {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-success {
+            border-left: 4px solid #10b981;
+            background: #0f172a;
+        }
+
+        .result-success .result-label {
+            color: #10b981;
+        }
+
+        .result-error {
+            border-left: 4px solid #ef4444;
+            background: #0f172a;
+        }
+
+        .result-error .result-label {
+            color: #ef4444;
+        }
+
+        .result-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #e2e8f0;
+            letter-spacing: -1px;
+        }
+
+        .info {
+            background: #1e293b;
+            border-left: 3px solid #0ea5e9;
+            padding: 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            border: 1px solid #334155;
+        }
+
+        .info strong {
+            color: #0ea5e9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Deutsche Zahlen</h1>
+        <p class="subtitle">Validator</p>
+
+        <div class="input-group">
+            <label for="numberInput">Введите число:</label>
+            <input 
+                type="text" 
+                id="numberInput" 
+                placeholder="einundzwanzig"
+                autocomplete="off"
+            >
+        </div>
+
+        <div class="button-group">
+            <button class="btn-validate" onclick="validateNumber()">Проверить</button>
+            <button class="btn-clear" onclick="clearInput()">Очистить</button>
+        </div>
+
+        <div class="result" id="result">
+            <div class="result-label" id="resultLabel"></div>
+            <div class="result-value" id="resultValue"></div>
+        </div>
+
+        <div class="info">
+            ℹ️ Поддерживаются числа от <strong>null</strong> (0) до <strong>neunhundertneunundneunzig</strong> (999)
+        </div>
+    </div>
+
+    <script>
+        // ============= germanNumbers.js (встроенный код) =============
+
+        const generateGermanNumbers = () => {
+            const numbers = {}
+
+            // 0-10
+            numbers['null'] = 0
+            numbers['eins'] = 1
+            numbers['ein'] = 1
+            numbers['zwei'] = 2
+            numbers['drei'] = 3
+            numbers['vier'] = 4
+            numbers['fünf'] = 5
+            numbers['sechs'] = 6
+            numbers['sieben'] = 7
+            numbers['acht'] = 8
+            numbers['neun'] = 9
+            numbers['zehn'] = 10
+
+            // 11-19
+            numbers['elf'] = 11
+            numbers['zwölf'] = 12
+            numbers['dreizehn'] = 13
+            numbers['vierzehn'] = 14
+            numbers['fünfzehn'] = 15
+            numbers['sechzehn'] = 16
+            numbers['siebzehn'] = 17
+            numbers['achtzehn'] = 18
+            numbers['neunzehn'] = 19
+
+            // десятки 20-90
+            const tens = [
+                'zwanzig',
+                'dreißig',
+                'vierzig',
+                'fünfzig',
+                'sechzig',
+                'siebzig',
+                'achtzig',
+                'neunzig',
+            ]
+
+            const units = [
+                'ein',
+                'zwei',
+                'drei',
+                'vier',
+                'fünf',
+                'sechs',
+                'sieben',
+                'acht',
+                'neun',
+            ]
+
+            // составные десятки с единицами (einundzwanzig)
+            for (let i = 0; i < units.length; i++) {
+                for (let j = 0; j < tens.length; j++) {
+                    const num = i + 1 + (j + 2) * 10
+                    numbers[`${units[i]}und${tens[j]}`] = num
+                }
+            }
+
+            // сами десятки
+            for (let j = 0; j < tens.length; j++) {
+                numbers[tens[j]] = (j + 2) * 10
+            }
+
+            // сотни 100-900
+            const hundreds = [
+                '',
+                'ein',
+                'zwei',
+                'drei',
+                'vier',
+                'fünf',
+                'sechs',
+                'sieben',
+                'acht',
+                'neun',
+            ]
+
+            const baseEntries = Object.entries(numbers).filter(
+                ([k, v]) => v > 0 && v < 100
+            )
+
+            for (let i = 0; i < hundreds.length; i++) {
+                const prefix = hundreds[i]
+                const key = prefix === '' ? 'hundert' : `${prefix}hundert`
+                const hundredValue = i === 0 ? 100 : i * 100
+
+                numbers[key] = hundredValue
+
+                for (const [k, v] of baseEntries) {
+                    numbers[`${key}${k}`] = hundredValue + v
+                }
+            }
+
+            return numbers
+        }
+
+        // Алиасы без умляутов
+        const addAliases = (dict) => {
+            const replacements = {
+                fünf: 'funf',
+                dreißig: 'dreissig',
+                sechzig: 'sechszig',
+                zwölf: 'zwolf',
+            }
+
+            for (const [canonical, alias] of Object.entries(replacements)) {
+                for (const [key, value] of Object.entries(dict)) {
+                    if (key.includes(canonical)) {
+                        const aliasKey = key.replaceAll(canonical, alias)
+                        if (dict[aliasKey] === undefined) {
+                            dict[aliasKey] = value
+                        }
+                    }
+                }
+            }
+
+            return dict
+        }
+
+        let germanNumbersDict = generateGermanNumbers()
+        germanNumbersDict = addAliases(germanNumbersDict)
+
+        // Валидные элементы
+        const validUnits = [
+            'ein',
+            'eins',
+            'zwei',
+            'drei',
+            'vier',
+            'fünf',
+            'sechs',
+            'sieben',
+            'acht',
+            'neun',
+        ]
+
+        const validTeens = [
+            'elf',
+            'zwölf',
+            'dreizehn',
+            'vierzehn',
+            'fünfzehn',
+            'sechzehn',
+            'siebzehn',
+            'achtzehn',
+            'neunzehn',
+        ]
+
+        const validTens = [
+            'zwanzig',
+            'dreißig',
+            'vierzig',
+            'fünfzig',
+            'sechzig',
+            'siebzig',
+            'achtzig',
+            'neunzig',
+        ]
+
+        const tokenizeGermanNumber = (text) => {
+            return text
+                .toLowerCase()
+                .replace(/\s+/g, ' ')
+                .trim()
+                .split(' ')
+                .filter(Boolean)
+        }
+
+        // Возвращает первый неизвестный токен (или null)
+        const findUnknownToken = (tokens, knownList) => {
+            for (let t of tokens) {
+                if (!knownList.includes(t) && t !== 'hundert' && t !== 'und') {
+                    return t
+                }
+            }
+            return null
+        }
+
+        // Разбор слова по дереву разрядов
+        const validateNumberWord = (text) => {
+            const tokens = tokenizeGermanNumber(text)
+            const cleanText = text.toLowerCase().replace(/\s+/g, '').trim()
+
+            if (!cleanText) return 'Введите число'
+
+            if (cleanText === 'tausend' || cleanText === 'eintausend')
+                return 'Поддерживаются только числа от 0 до 999'
+
+            let remaining = cleanText
+            let usedHundred = false
+
+            const allKnown = [
+                ...validUnits,
+                ...validTens,
+                ...validTeens,
+                'hundert',
+                'und',
+            ]
+
+            // --- 0) Спецкейсы для "eins"
+            if (remaining.startsWith('einsund'))
+                return 'Единица "eins" недопустима перед "und", используйте "ein"'
+            if (remaining.startsWith('einszehn'))
+                return 'Неправильно: "einszehn". Используйте "elf"'
+
+            // --- 1) Teens (11–19)
+            for (let teen of validTeens) {
+                if (remaining.startsWith(teen)) {
+                    const after = remaining.slice(teen.length)
+                    if (!after) return null
+                    return 'После чисел 11–19 недопустимы другие числа'
+                }
+            }
+
+            // --- 2) чистая "zehn"
+            if (remaining === 'zehn') return null
+            if (remaining.startsWith('zehn')) {
+                const after = remaining.slice(4)
+                if (after) return 'После "zehn" недопустимы другие числа'
+            }
+
+            // --- 3) Ошибки с "einzehn"/"einundzehn"
+            if (remaining.startsWith('einzehn'))
+                return 'Неверно: "einzehn" не существует, используйте "zehn" или "elf"'
+            if (remaining.startsWith('einundzehn'))
+                return 'Неверно: "einundzehn" не существует, используйте "elf" или "zehn"'
+
+            // --- 4-5) Сотни и "und" после сотни
+            for (let prefix of [
+                '',
+                'ein',
+                'zwei',
+                'drei',
+                'четыре',
+                'fünf',
+                'sechs',
+                'sieben',
+                'acht',
+                'neun',
+            ]) {
+                const hundredWord = prefix === '' ? 'hundert' : prefix + 'hundert'
+                if (remaining.startsWith(hundredWord)) {
+                    if (usedHundred) return 'Можно использовать "hundert" только один раз'
+                    usedHundred = true
+                    remaining = remaining.slice(hundredWord.length)
+
+                    // если ровно сотня
+                    if (!remaining) return null
+
+                    // КРИТИЧНО: проверяем "und" после "hundert" ДО проверки неизвестных токенов
+                    if (remaining.startsWith('und')) {
+                        return 'После "hundert" не может идти "und"'
+                    }
+
+                    break
+                }
+            }
+
+            // Если после сотни остался ещё "hundert" — ошибка
+            if (usedHundred && remaining.includes('hundert')) {
+                return 'Можно использовать "hundert" только один раз'
+            }
+
+            // --- 6) Проверка числа вне диапазона (включая "hunderttausend" и т.п.)
+            if (cleanText.includes('tausend')) {
+                return 'Поддерживаются только числа от 0 до 999'
+            }
+
+            // --- 7) ТЕПЕРЬ проверяем неизвестные токены (после всех грамматических проверок)
+            const unknown = findUnknownToken(tokens, allKnown)
+            if (unknown) return `неизвестно '${unknown}'`
+
+            const knownPrefix = allKnown.find((x) => remaining.startsWith(x))
+            if (!knownPrefix) return `неизвестно '${remaining}'`
+
+            // --- 8) Если сотни не было: проверяем единицу в начале (и корректность суффикса)
+            if (!usedHundred) {
+                for (let u of validUnits) {
+                    if (remaining.startsWith(u)) {
+                        const after = remaining.slice(u.length)
+                        if (!after) return null
+                        if (after.startsWith('hundert') || after.startsWith('und')) break
+
+                        if (
+                            validTens.some((t) => after.startsWith(t)) ||
+                            validTeens.some((tt) => after.startsWith(tt))
+                        ) {
+                            return `После "${u}" не могут идти десятки или числа формата 11–19`
+                        }
+
+                        const afterKnown = allKnown.find((k) => after.startsWith(k))
+                        if (!afterKnown) return `неизвестно '${remaining}'`
+
+                        for (let u2 of validUnits) {
+                            if (after === u2) {
+                                return `После "${u}" не должны идти единицы, десятки и числа формата 11-19`
+                            }
+                        }
+
+                        return `После "${u}" не должны идти единицы, десятки и числа формата 11-19`
+                    }
+                }
+            }
+
+            // --- 9) Десятки (самостоятельно)
+            for (let t of validTens) {
+                if (remaining.startsWith(t)) {
+                    const after = remaining.slice(t.length)
+                    if (!after) return null
+                    return 'После десятков недопустимы другие числа'
+                }
+            }
+
+            // --- 10) Разбор конструкции unit + "und" + tens
+            const undIndex = remaining.indexOf('und')
+            if (undIndex !== -1) {
+                const before = remaining.slice(0, undIndex)
+                const after = remaining.slice(undIndex + 3)
+
+                if (!before) return '"und" не может идти в начале'
+
+                if (validUnits.includes(before)) {
+                    if (before === 'eins')
+                        return 'Единица "eins" недопустима перед "und", используйте "ein"'
+                    if (!after) return 'После "und" должны идти десятки'
+                    if (after.startsWith('hundert')) return 'После "und" должны идти десятки'
+                    if (validUnits.includes(after))
+                        return 'После "und" не могут идти числа единичного формата'
+
+                    const knownTen = validTens.find((t) => after.startsWith(t))
+                    const knownTeen = validTeens.find((t) => after.startsWith(t))
+
+                    if (knownTeen || !knownTen) return 'После "und" должны идти десятки'
+
+                    const tail = after.slice(knownTen.length)
+                    if (tail) return `неизвестно '${tail}'`
+
+                    return null
+                }
+
+                if (validTens.includes(before)) {
+                    if (!after) return 'После "und" должны идти десятки или единицы'
+                    if (validUnits.includes(after)) return null
+                    return `неизвестно '${after}'`
+                }
+
+                return `Перед "und" должны идти единицы`
+            }
+
+            // --- 11) Единицы (самостоятельно)
+            if (validUnits.includes(remaining)) return null
+
+            // --- 12) Остаток после сотен (составные)
+            if (usedHundred) {
+                // teens
+                if (validTeens.includes(remaining)) return null
+
+                // десятки
+                if (validTens.some((t) => remaining.startsWith(t))) return null
+
+                // единицы
+                if (validUnits.includes(remaining)) return null
+
+                // unit + ten без "und"
+                for (let u of validUnits) {
+                    if (remaining.startsWith(u)) {
+                        const afterU = remaining.slice(u.length)
+                        for (let t of validTens) {
+                            if (afterU === t) return null
+                        }
+                    }
+                }
+
+                // составные через "und"
+                const undIndex2 = remaining.indexOf('und')
+                if (undIndex2 !== -1) {
+                    const b = remaining.slice(0, undIndex2)
+                    const a = remaining.slice(undIndex2 + 3)
+                    if (validUnits.includes(b) && validTens.includes(a)) return null
+                }
+
+                return `неизвестно '${remaining}'`
+            }
+
+            // --- 13) На всякий случай
+            return 'Не распознано. Используйте числа от 0 до 999'
+        }
+
+        // Поиск числа
+        const findGermanNumber = (text) => {
+            const cleanText = text.toLowerCase().replace(/\s+/g, '').trim()
+            if (germanNumbersDict[cleanText] !== undefined)
+                return germanNumbersDict[cleanText]
+
+            for (const [key, value] of Object.entries(germanNumbersDict)) {
+                if (key.replace(/\s+/g, '') === cleanText) return value
+            }
+
+            return null
+        }
+
+        const getNumberOrError = (text) => {
+            const number = findGermanNumber(text)
+            if (number !== null) return number
+            return validateNumberWord(text)
+        }
+
+        // ============= UI JavaScript =============
+
+        function validateNumber() {
+            const input = document.getElementById('numberInput').value
+            const result = document.getElementById('result')
+            const resultLabel = document.getElementById('resultLabel')
+            const resultValue = document.getElementById('resultValue')
+
+            if (!input.trim()) {
+                resultLabel.textContent = '⚠️ Ошибка'
+                resultValue.textContent = 'Введите число'
+                result.className = 'result show result-error'
+                return
+            }
+
+            const output = getNumberOrError(input)
+
+            if (typeof output === 'number') {
+                resultLabel.textContent = '✓ Успешно'
+                resultValue.textContent = output
+                result.className = 'result show result-success'
+            } else {
+                resultLabel.textContent = '✗ Ошибка'
+                resultValue.textContent = output
+                result.className = 'result show result-error'
+            }
+        }
+
+        function clearInput() {
+            document.getElementById('numberInput').value = ''
+            document.getElementById('result').classList.remove('show')
+            document.getElementById('numberInput').focus()
+        }
+
+        // Enter для валидации
+        document.getElementById('numberInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') validateNumber()
+        })
+    </script>
+</body>
+</html>
